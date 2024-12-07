@@ -1,0 +1,71 @@
+@startuml
+
+class Servicio{
+    precioBase: Double
+    tipo: TipoServicio
+    mbps: Integer
+    costoInstalacion: Double
+}
+class EstadoPresupuesto{
+    estado: Estado
+    fecha: LocalDate
+}
+enum TipoServicio{
+    SIMETRICO
+    ASIMETRICO
+}
+Servicio --> TipoServicio
+enum Estado{
+    ACTIVO
+    VENCIDO
+    APROBADO
+    RECHAZADO
+}
+EstadoPresupuesto --> Estado
+class Cliente{
+    direccion: Direccion
+    nombre: String
+    apellido: String
+    nroDni: String
+}
+class Contacto{
+    tipo: <<ENUM>> TipoContacto
+    contacto: String
+}
+class Direccion{
+    latitud: Double
+    longitud: Double
+}
+
+together{
+    class ServicioPrestado{
+        servicio: Servicio
+        fechaContratacion: LocalDate
+        repetidor: Repetidor
+        direccion: Direccion
+        presupuesto: Presupuesto
+        cliente: Cliente
+    }
+    class Presupuesto{
+        servicio: Servicio
+        Direccion: Direccion
+        estados: List<EstadoPresupuesto>
+        recargoMultiplesRechazos: double
+        abonoMensual: Double
+        bonificacionEspecial: float
+        recargoPorDistancia: double
+        recargoPorAltura: double
+        precioFinal: double
+        fecha: LocalDate
+        cliente: Cliente
+    }
+}
+Cliente --> Direccion
+Cliente --> "*" Contacto
+Presupuesto -> "*" EstadoPresupuesto
+Presupuesto --> Cliente
+Presupuesto --> Direccion
+Presupuesto --> Servicio
+ServicioPrestado -> Presupuesto
+
+@enduml

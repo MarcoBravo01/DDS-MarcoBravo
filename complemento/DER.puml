@@ -1,0 +1,72 @@
+@startuml
+entity Servicio{
+    *id: integer(11) <<PK>>
+    ---
+    tipo: enum
+    precioBase: decimal(8,2)
+    mbps: decimal(3,0)
+    velocidad_subida: integer(11)
+    velocidad_bajada: integer(11)
+    costoInstalacion: decimal(8,2)
+}
+entity ServicioPrestado{
+    *id: integer(11) <<PK>>
+    ---
+    servicio_id: integer(11) <<FK>>
+    repetidor_id: integer(11) <<FK>>
+    presupuesto_id : integer(11) <<FK>>
+    recargoPorAltura: decimal(8,2)
+    recargoPorDistancia: decimal(8,2)
+    latitud:decimal(4,2)
+    longitud:decimal(4,2)
+}
+entity Cliente{
+    *id: integer(11) <<PK>>
+    ---
+    nombre: varchar(50)
+    apellido: varchar(50)
+    nroDni: char(8)
+    telefono: VARCHAR(255)
+    mail: VARCHAR(255)
+    cant_presupuestos_rechazados(2,0)
+    cant_servicios_prestados:decimal(2,0)
+}
+entity Presupuesto{
+    *id: integer(11) <<PK>>
+    ---
+    cliente_id: integer(11) <<FK>>
+    estado: ENUM
+    costo_instalacion: decimal(8,2)
+    servicio_id: integer(11) <<FK>>
+    latitud:decimal(4,2)
+    longitud:decimal(4,2)
+    recargoMultiplesRechazos: decimal(8,2)
+    abonoMensual: decimal(8,2)
+    bonificacionEspecial: decimal(2,0)
+    precioFinal: decimal(8,2)
+    fecha: DATE
+}
+entity EstadoPresupuesto{
+    *id: integer(11) <<PK>>
+    ---
+    presupuesto_id: integer(11)<<FK>>
+    estado: ENUM
+}
+entity Repetidor{
+    *id: integer(11) <<PK>>
+    ---
+    mac: CHAR(48)
+    latitud:decimal(4,2)
+    longitud:decimal(4,2)
+    radioAlcance: decimal(5,2)
+    cantMaximaConexiones: decimal(2,0)
+    fechaColocacion: DATE
+    lleno_conexiones:bit(1)
+}
+Servicio ||--o{ServicioPrestado
+ServicioPrestado }o--||Repetidor
+ServicioPrestado ||-||Presupuesto
+Servicio ||--o{Presupuesto
+Presupuesto }|-||Cliente
+Presupuesto ||--o{EstadoPresupuesto
+@enduml

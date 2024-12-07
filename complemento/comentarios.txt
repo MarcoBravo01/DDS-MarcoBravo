@@ -1,0 +1,44 @@
+1) Modelado de dominio
+Con respecto a los servicios, si bien el enunciado menciona que hay 3 tipos, no se especifica que alguno de los 3
+tenga comportamiento especial. Por lo tanto, para favorecer la mantenibilidad, voy a modelar únicamente una clase Servicio,
+y manejar los tipos como un atributo de esa clase.
+
+Con esto gano extensibilidad suficiente para poder agregar más servicios en el futuro sin tocar el código.
+
+Para permitir la gestión y trazabilidad de los repetidores, modelo la clase Repetidor con los atributos mencionados en el enunciado.
+Para permitir la gestión de clientes, se modela una clase Cliente
+
+Para permitir gestión y trazabilidad de los Presupuestos, modelo clase Presupuesto y EstadoPresupuesto para tener todos
+los cambios de estado por los que pasó un presupuesto
+
+Para calcular los recargos por distancia y altura, es necesario conectarse a dos APIs. Aplico patrón Adapter para ganar
+desacoplamiento respecto al componente que se conecte verdaderamente con las APIs.
+
+Para ganar aún mas desacomplamiento, delego en una clase Calculadora lo referente a los cálculos por recargos.
+
+2) Persistencia
+
+Es necesario persistir los elementos fundamentales del sistema:
+    Servicio
+    ServicioPrestado
+    Repetidor
+    Presupuesto
+    Cliente
+
+El resto, tales como Direccion o Contacto pueden quedar embebidos en las entidades correspondientes
+
+No hay ningún impedance mismatch importante. Para identificar a cada entidad, aplico una clave subrogada.
+No tengo ninguna relación bidireccional.
+No aplico herencia ni interfaces stateful.
+
+Desnormalizo algunos datos calculables como el precio del servicio o la cantidad de presupuestos rechazados por un cliente
+
+3) Arquitectura
+
+Una arquitectura de microservicios no la vería viable ya que en cuanto a Escalabilidad, el enunciado parece
+dejar en claro que la cooperativa no es muy grande, por lo tanto no debería esperar un gran tráfico de usuarios concurrentemente
+entonces pensar en microservicios con el fin de que sea más escalable, sería un desperdicio de recursos.
+Con respecto a la facilidad de mantenimiento, si no contamos con un gran equipo de trabajo, el mantenimiento se dificultaría al
+manejar entornos distintos para cada microservicio.
+
+Se puede pensar en un componente de SSO 

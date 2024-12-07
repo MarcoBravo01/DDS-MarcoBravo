@@ -1,0 +1,108 @@
+/*
+Servicios -> son 3, 5 Mbps, 10 Mbps y 20 Mbps
+Servicio -> precio base y Costo Variable
+    Costo Variable -> coeficiente para calcular el Recargo por distancia y Recargo por altura
+Repetidor -> dirección fisica, radio de alcance, nombre identificatorio y coordenadas (altitud, longitud)
+    Admiten cantidad máxima de conexiones. Si se supera, se gestiona instalación de otro dispositivos
+
+coeficiente: 0,5 con eso calculo los recargos.
+*/
+
+@startuml
+class Servicio{
+    precioBase: Double
+    tipo: <<ENUM>>TipoServicio
+    nombre: String
+    mbps: Integer
+    velocidad_subida: double
+    velocidad_bajada: double
+    costoInstalacion: Double
+}
+note right: tipo: SIMETRICO, ASIMETRICO
+class ServicioPrestado{
+    servicio: Servicio
+    direccion: Direccion
+    precioFinal: Double
+    fechaContratacion: LocalDate
+    repetidor: Repetidor
+    presupuesto: Presupuesto
+    adapterDistanciaPuntos: AdapterDistanciaEntrePuntos
+    adapterAlturaMasAlta: AdapterAltura
+   ----
+    +recargoPorDistancia(): Double
+    +recargoPorAltura(): Double
+}
+class Repetidor{
+    direccionFisica: Direccion
+    radioAlcance: Double
+    nombre: String
+    cantMaximaConexiones: Int
+    fechaColocacion: LocalDate
+    ---
+    +getDireccion():Direccion
+}
+class Cliente{
+    direccion: Direccion
+    nombre: String
+    apellido: String
+    nroDni: String
+    presupuestos: List<Presupuesto>
+    serviciosContratados: List<ServicioPrestado>
+}
+class Contacto{
+    tipo: <<ENUM>> TipoContacto
+    contacto: String
+}
+class Direccion{
+    latitud: Double
+    longitud: Double
+}
+class Presupuesto{
+    servicio: Servicio
+    Direccion: direccion
+    estados: List<EstadoPresupuesto>
+    recargoMultiplesRechazos: double
+    costoInstalacion: double
+    abonoMensual: Double
+    bonificacionEspecial: float
+    recargoPorDistancia: double
+    recargoPorAltura: double
+    precioFinal: double
+    fecha: LocalDate
+    cliente: Cliente
+}
+class EstadoPresupuesto{
+    estado: <<ENUM>>
+    fecha: LocalDate
+}
+
+ServicioPrestado --> AdapterDistanciaEntrePuntos
+
+Interface AdapterDistanciaEntrePuntos{
+----
++distanciaEntre(latitud1:String,longitud1, latitud2, longitud2): Double
+}
+Interface AdapterAltura{
+----
++alturaMasAlta(latitud: String, longitud: String, radio: String): Double
+}
+class DistanceMatrixAPI{
+----
++distanciaEnMetrosEntre(latitud: String, longitud: String, radio: String): Double
+}
+class UTNGEOMAX{
+----
++alturaMasAlta():double
+}
+DistanceMatrixAPI ..|>AdapterDistanciaEntrePuntos
+UTNGEOMAX ..|>AdapterAltura
+ServicioPrestado *-- Servicio
+Repetidor --> Direccion
+ServicioPrestado --> Direccion
+ServicioPrestado --> AdapterAltura
+Cliente --> Direccion
+Cliente --> "*" Contacto
+ServicioPrestado --> Repetidor
+Presupuesto --> "*" EstadoPresupuesto
+Presupuesto --> ServicioPrestado
+@enduml

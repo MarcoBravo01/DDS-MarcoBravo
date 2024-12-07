@@ -1,0 +1,60 @@
+@startuml
+class Servicio{
+    precioBase: double
+    tipo: <<ENUM>>
+    mbps: Integer
+    velocidad_subida: double
+    velocidad_bajada: double
+    costoInstalacion: double
+}
+enum TipoServicio{
+    SIMETRICO
+    ASIMETRICO
+}
+Servicio --> TipoServicio
+class ServicioPrestado{
+    servicio: Servicio
+    precioFinal: Double
+    fechaContratacion: LocalDate
+    repetidor: Repetidor
+    direccion: Direccion
+    recargoPorAltura: Double
+    recargoPorDistancia: Double
+   ----
+    +recargoPorDistancia(calculador: CalculadorRecargoDistancia): Double
+    +recargoPorAltura(calculador: CalculadorRecargoAltura): Double
+}
+class Repetidor{
+    direccionFisica: Direccion
+    radioAlcance: Double
+    nombre: String
+    cantMaximaConexiones: Integer
+    fechaColocacion: LocalDate
+    ---
+    +getDireccion():Direccion
+}
+class CalculadorRecargoDistancia{
+    adapterDistanciaPuntos: AdapterDistanciaEntrePuntos
+    ----
+    +calcularRecargoDistancia(Direccion, Direccion): Double
+}
+Interface AdapterDistanciaEntrePuntos{
+----
++distanciaEntre(latitud1:String,longitud1, latitud2, longitud2): Double
+}
+class Direccion{
+    latitud: Double
+    longitud: Double
+}
+class DistanceMatrixAPI{
+----
++distanciaEnMetrosEntre(latitud: String, longitud: String, radio: String): Double
+}
+ServicioPrestado *-- Servicio
+ServicioPrestado --> Repetidor
+ServicioPrestado ..> CalculadorRecargoDistancia
+ServicioPrestado --> Direccion
+Repetidor --> Direccion
+CalculadorRecargoDistancia --> AdapterDistanciaEntrePuntos
+DistanceMatrixAPI ..|>AdapterDistanciaEntrePuntos
+@enduml
